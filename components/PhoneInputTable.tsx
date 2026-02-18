@@ -19,6 +19,8 @@ const PhoneInputTable: React.FC = () => {
     const [isLoadingStates, setIsLoadingStates] = useState(false);
     const stateDropdownRef = useRef<HTMLDivElement>(null);
 
+    const [phoneNumber, setPhoneNumber] = useState("");
+
     const filteredCountries = countries.filter(country =>
         country.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         country.code.toLowerCase().includes(searchQuery.toLowerCase())
@@ -27,6 +29,15 @@ const PhoneInputTable: React.FC = () => {
     const filteredStates = states.filter(state =>
         state.name.toLowerCase().includes(stateSearchQuery.toLowerCase())
     );
+
+    useEffect(() => {
+        if (selectedCountry && !phoneNumber.startsWith(selectedCountry.dialCode)) {
+            // When country changes, if phone is empty or doesn't start with new code, update it
+            if (phoneNumber === "" || countries.some(c => phoneNumber.startsWith(c.dialCode))) {
+                setPhoneNumber(selectedCountry.dialCode + " ");
+            }
+        }
+    }, [selectedCountry]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -270,6 +281,8 @@ const PhoneInputTable: React.FC = () => {
                             <input
                                 type="tel"
                                 placeholder="712 345 678"
+                                value={phoneNumber}
+                                onChange={(e) => setPhoneNumber(e.target.value)}
                                 className="w-full rounded-lg border border-zinc-200 bg-white py-2 px-3 text-sm transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/10 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:focus:border-blue-400"
                             />
                         </td>
