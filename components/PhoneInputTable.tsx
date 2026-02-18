@@ -2,75 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 
-interface Country {
-    name: string;
-    code: string;
-    emoji: string;
-}
-
-const countries: Country[] = [
-    { "name": "Ascension Island", "code": "AC", "emoji": "🇦🇨" },
-    { "name": "Andorra", "code": "AD", "emoji": "🇦🇩" },
-    { "name": "United Arab Emirates", "code": "AE", "emoji": "🇦🇪" },
-    { "name": "Afghanistan", "code": "AF", "emoji": "🇦🇫" },
-    { "name": "Antigua & Barbuda", "code": "AG", "emoji": "🇦🇬" },
-    { "name": "Anguilla", "code": "AI", "emoji": "🇦🇮" },
-    { "name": "Albania", "code": "AL", "emoji": "🇦🇱" },
-    { "name": "Armenia", "code": "AM", "emoji": "🇦🇲" },
-    { "name": "Angola", "code": "AO", "emoji": "🇦🇴" },
-    { "name": "Argentina", "code": "AR", "emoji": "🇦🇷" },
-    { "name": "Austria", "code": "AT", "emoji": "🇦🇹" },
-    { "name": "Australia", "code": "AU", "emoji": "🇦🇺" },
-    { "name": "Azerbaijan", "code": "AZ", "emoji": "🇦🇿" },
-    { "name": "Belgium", "code": "BE", "emoji": "🇧🇪" },
-    { "name": "Brazil", "code": "BR", "emoji": "🇧🇷" },
-    { "name": "Canada", "code": "CA", "emoji": "🇨🇦" },
-    { "name": "Switzerland", "code": "CH", "emoji": "🇨🇭" },
-    { "name": "Chile", "code": "CL", "emoji": "🇨🇱" },
-    { "name": "China", "code": "CN", "emoji": "🇨🇳" },
-    { "name": "Germany", "code": "DE", "emoji": "🇩🇪" },
-    { "name": "Denmark", "code": "DK", "emoji": "🇩🇰" },
-    { "name": "Egypt", "code": "EG", "emoji": "🇪🇬" },
-    { "name": "Spain", "code": "ES", "emoji": "🇪🇸" },
-    { "name": "Ethiopia", "code": "ET", "emoji": "🇪🇹" },
-    { "name": "Finland", "code": "FI", "emoji": "🇫🇮" },
-    { "name": "France", "code": "FR", "emoji": "🇫🇷" },
-    { "name": "United Kingdom", "code": "GB", "emoji": "🇬🇧" },
-    { "name": "Ghana", "code": "GH", "emoji": "🇬🇭" },
-    { "name": "Greece", "code": "GR", "emoji": "🇬🇷" },
-    { "name": "Hong Kong", "code": "HK", "emoji": "🇭🇰" },
-    { "name": "Indonesia", "code": "ID", "emoji": "🇮🇩" },
-    { "name": "Ireland", "code": "IE", "emoji": "🇮🇪" },
-    { "name": "Israel", "code": "IL", "emoji": "🇮🇱" },
-    { "name": "India", "code": "IN", "emoji": "🇮🇳" },
-    { "name": "Italy", "code": "IT", "emoji": "🇮🇹" },
-    { "name": "Japan", "code": "JP", "emoji": "🇯🇵" },
-    { "name": "Kenya", "code": "KE", "emoji": "🇰🇪" },
-    { "name": "South Korea", "code": "KR", "emoji": "🇰🇷" },
-    { "name": "Morocco", "code": "MA", "emoji": "🇲🇦" },
-    { "name": "Mexico", "code": "MX", "emoji": "🇲🇽" },
-    { "name": "Malaysia", "code": "MY", "emoji": "🇲🇾" },
-    { "name": "Nigeria", "code": "NG", "emoji": "🇳🇬" },
-    { "name": "Netherlands", "code": "NL", "emoji": "🇳🇱" },
-    { "name": "Norway", "code": "NO", "emoji": "🇳🇴" },
-    { "name": "New Zealand", "code": "NZ", "emoji": "🇳🇿" },
-    { "name": "Philippines", "code": "PH", "emoji": "🇵🇭" },
-    { "name": "Pakistan", "code": "PK", "emoji": "🇵🇰" },
-    { "name": "Poland", "code": "PL", "emoji": "🇵🇱" },
-    { "name": "Portugal", "code": "PT", "emoji": "🇵🇹" },
-    { "name": "Qatar", "code": "QA", "emoji": "🇶🇦" },
-    { "name": "Russia", "code": "RU", "emoji": "🇷🇺" },
-    { "name": "Rwanda", "code": "RW", "emoji": "🇷🇼" },
-    { "name": "Saudi Arabia", "code": "SA", "emoji": "🇸🇦" },
-    { "name": "Sweden", "code": "SE", "emoji": "🇸🇪" },
-    { "name": "Singapore", "code": "SG", "emoji": "🇸🇬" },
-    { "name": "South Africa", "code": "ZA", "emoji": "🇿🇦" },
-    { "name": "Tanzania", "code": "TZ", "emoji": "🇹🇿" },
-    { "name": "Uganda", "code": "UG", "emoji": "🇺🇬" },
-    { "name": "United States", "code": "US", "emoji": "🇺🇸" },
-    { "name": "Vietnam", "code": "VN", "emoji": "🇻🇳" },
-    { "name": "Zimbabwe", "code": "ZW", "emoji": "🇿🇼" },
-];
+import { Country, countries } from "../data/countries";
 
 const PhoneInputTable: React.FC = () => {
     const [selectedCountry, setSelectedCountry] = useState<Country>(countries.find(c => c.code === "KE") || countries[0]);
@@ -91,6 +23,24 @@ const PhoneInputTable: React.FC = () => {
         };
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    useEffect(() => {
+        const fetchCountry = async () => {
+            try {
+                const response = await fetch("https://ipapi.co/json/");
+                const data = await response.json();
+                if (data.country_code) {
+                    const country = countries.find(c => c.code === data.country_code);
+                    if (country) {
+                        setSelectedCountry(country);
+                    }
+                }
+            } catch (error) {
+                console.error("Failed to fetch IP-based country:", error);
+            }
+        };
+        fetchCountry();
     }, []);
 
     return (
