@@ -21,14 +21,38 @@ const PhoneInputTable: React.FC = () => {
 
     const [phoneNumber, setPhoneNumber] = useState("");
 
-    const filteredCountries = countries.filter(country =>
-        country.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        country.code.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const filteredCountries = countries
+        .filter(country =>
+            country.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            country.code.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+        .sort((a, b) => {
+            const query = searchQuery.toLowerCase();
+            const aName = a.name.toLowerCase();
+            const bName = b.name.toLowerCase();
+            const aStarts = aName.startsWith(query);
+            const bStarts = bName.startsWith(query);
 
-    const filteredStates = states.filter(state =>
-        state.name.toLowerCase().includes(stateSearchQuery.toLowerCase())
-    );
+            if (aStarts && !bStarts) return -1;
+            if (!aStarts && bStarts) return 1;
+            return aName.localeCompare(bName);
+        });
+
+    const filteredStates = states
+        .filter(state =>
+            state.name.toLowerCase().includes(stateSearchQuery.toLowerCase())
+        )
+        .sort((a, b) => {
+            const query = stateSearchQuery.toLowerCase();
+            const aName = a.name.toLowerCase();
+            const bName = b.name.toLowerCase();
+            const aStarts = aName.startsWith(query);
+            const bStarts = bName.startsWith(query);
+
+            if (aStarts && !bStarts) return -1;
+            if (!aStarts && bStarts) return 1;
+            return aName.localeCompare(bName);
+        });
 
     useEffect(() => {
         if (selectedCountry && !phoneNumber.startsWith(selectedCountry.dialCode)) {
